@@ -1,7 +1,7 @@
 ---
 name: new-project
-description: Turns a folder of raw notes and documents into a defined, decided and planned project through repeated decision rounds with the user, then generates docs/, dev-plan/ and a repository base. Usage - /new-project @projects/<name>/docs/00-intake (add "quick" for one round per stage).
-argument-hint: @projects/<name>/docs/00-intake [quick]
+description: Turns a folder of raw notes and documents into a defined, decided and planned project through repeated decision rounds with the user, then generates docs/, dev-plan/ and a repository base. Usage - /new-project @path/to/folder-with-your-notes (add "quick" for one round per stage).
+argument-hint: @path/to/folder-with-your-notes [quick]
 disable-model-invocation: true
 ---
 
@@ -17,10 +17,10 @@ The input for this run (intake folder or file, and optional flags): $ARGUMENTS
 
 The user passes a path after the command, plus optional flags:
 
-- A **folder** (normally `<project>/docs/00-intake/`) or a **single file** (treated as a folder of one). Read every file in it with your tools; never guess content.
-- No path: ask for it, or let them describe the idea in chat and save it as `docs/00-intake/idea.md`.
-- **Resolve `<project>`:** if the path is `<X>/docs/00-intake`, then `<project>` is `<X>` and its folder name is the project name. Otherwise ask (stage 1) for a name and location (`projects/<slug>/` recommended, slug = short kebab-case) and create it.
-- **Resume / re-run:** if `<project>/process/state.md` exists, read it, summarize in 3 lines where the process stands and continue; do not repeat closed rounds. In every run, also look for **new files** in the intake folder (anything outside `original/` and `formalized/`) and process only those. With no path, look for `projects/*/process/state.md`; if several exist, ask which.
+- A **folder** with their raw material, **any name** (e.g. `projects/<name>/docs/starting-notes/`), or a **single file** (treated as a folder of one). Call it `<intake>`. Read every file in it with your tools; never guess content.
+- No path: ask for it, or let them describe the idea in chat and save it as `idea.md` in a new `<project>/docs/00-intake/`.
+- **Resolve `<project>`:** if `<intake>` is `<X>/docs/<name>`, then `<project>` is `<X>` and its folder name is the project name. Otherwise ask (stage 1) for a name and location (`projects/<slug>/` recommended, slug = short kebab-case), create it, and move `<intake>` to `<project>/docs/<name>/` (a single file goes into a new `<project>/docs/00-intake/`).
+- **Resume / re-run:** if `<project>/process/state.md` exists, read it, summarize in 3 lines where the process stands and continue; do not repeat closed rounds. If it says planning is complete, follow "After completion" in `.claude/skills/new-project/templates/wrap-up.md`. In every run, also look for **new files** in the intake folder (anything outside `original/` and `formalized/`) and process only those. With no path, look for `projects/*/process/state.md`; if several exist, ask which.
 - "quick": run **one round per stage** and skip stage 7 unless a risk is critical.
 
 ## Project folder
@@ -29,9 +29,9 @@ Each project is a self-contained folder `<project>`, also the future repository 
 
 ```
 <project>/
-├── README.md  .gitignore  .env.example  LICENSE   (stage 10, as needed)
+├── README.md  .gitignore  AGENTS.md  CLAUDE.md  .env.example  LICENSE   (stage 10)
 ├── docs/
-│   ├── 00-intake/
+│   ├── <intake>/          your raw-material folder, any name
 │   │   ├── original/      your files, moved here untouched (stage 1)
 │   │   └── formalized/    one faithful Markdown copy per source + index.md (stage 1)
 │   └── 01-… 08-…          documentation for humans (stage 9)
@@ -50,21 +50,13 @@ Project code, when built later, also lives inside `<project>`. Never write proje
 5. **Always offer exits:** free-text answer and "I don't know / you decide". On "you decide", apply your recommendation and record it as an **assumption**.
 6. **Log everything.** After each round update `<project>/process/state.md` before asking the next question.
 7. **Flag invalidations.** If a new decision or new source material contradicts or weakens an earlier decision, say so and ask whether to revisit it.
-8. **Do not build the product.** This workflow produces definition and planning only.
+8. **Do not build the product.** The workflow ends at stage 11 with the project planned and ready to execute; it never starts the plan or writes product code.
 9. **Secrets:** never ask for or accept keys, passwords or tokens in chat. They live in a local `.env` ignored by git.
 10. **No `git init`, `commit` or `push`** without explicit permission.
 
 ## Rounds
 
-**Use your interactive question tool for every round**: `ask_question` in Antigravity, `AskUserQuestion` in Claude Code (clickable options that block until the user answers). The details below describe `ask_question`; with `AskUserQuestion`, put each option's pros and cons in its description instead of its label and ignore `toolAction`/`toolSummary`:
-
-- One call per round, up to 4 entries in `questions`. Each entry: `question` (clear, self-contained), `options` (strings, 2-4 real alternatives plus a last option `I don't know / you decide`), `is_multi_select` (true only when several options can apply, e.g. which features are must-have).
-- Options are plain strings, so put the pros and cons inside each one, short: `Use SQLite ✅ zero setup ⚠️ single user`. Put the recommended option **first** and end it with `(Recommended)`.
-- Do **not** add a "write your own" option: the UI already provides a free-text field.
-- `toolAction` and `toolSummary` are required: 2-5 words each (e.g. "Scope questions", "Round 3 decisions").
-- Before the call, write a short chat message: where we are, what this round decides, any 2-3 line background, and the reason for each recommendation.
-- If the user presses Skip or answers nothing, do not assume: ask once in chat what they prefer, or record the item as an open question.
-- If the tool is unavailable or fails, fall back to the text format in `.claude/skills/new-project/templates/round.md`. Never skip a round or ask loose open-ended questions in chat instead.
+**Use your interactive question tool for every round**: `ask_question` in Antigravity, `AskUserQuestion` in Claude Code (clickable options that block until the user answers). Follow the delivery rules in `.claude/skills/new-project/templates/round.md`: one call per round with up to 4 questions; 2-4 real options plus a last `I don't know / you decide`; the recommended option first, ending in `(Recommended)`; pros and cons inside each option; no "write your own" option (the UI already has free text); a short chat message before the call with context, any background and the reason for each recommendation. If the user skips, do not assume: ask once or log an open question. If no such tool works, use the text fallback in `round.md`. Never skip a round or ask loose open-ended questions in chat instead.
 
 Draw question ideas from `.claude/skills/new-project/templates/question-bank.md`, adapting them; never paste them mechanically.
 
@@ -79,7 +71,7 @@ Each stage (2-7) can repeat. After each round:
 ## Stages
 
 ### 1 · Intake and understanding
-Follow `.claude/skills/new-project/templates/intake.md` for the mechanics. In order: (1) resolve `<project>` and create `process/state.md`; (2) inventory the intake folder, flagging unreadable files and any secrets or personal data; (3) **move** every source file into `docs/00-intake/original/`, untouched; (4) write one faithful Markdown copy per readable file in `docs/00-intake/formalized/` plus `index.md`. Formalizing is **lossless**: never interpret, never fill gaps.
+Follow `.claude/skills/new-project/templates/intake.md` for the mechanics. In order: (1) resolve `<project>` and create `process/state.md`; (2) inventory the intake folder, flagging unreadable files and any secrets or personal data; (3) **move** every source file into `<intake>/original/`, untouched; (4) write one faithful Markdown copy per readable file in `<intake>/formalized/` plus `index.md`. Formalizing is **lossless**: never interpret, never fill gaps.
 
 Then, working from the index and formalized files, return: **what I understood** (3-5 lines); **who is involved**; **what is clear / missing / contradictory** (including conflicts between documents); **assumptions I am making** (numbered). Propose no solutions. Ask with the question tool to confirm or correct, plus the project name and location only if the path did not already name the project. If the user corrects the understanding, repeat before moving on.
 
@@ -119,13 +111,13 @@ If something is missing, recommend another round but respect the user's choice. 
 
 ### 9 · Generate documentation and plan
 Using `.claude/skills/new-project/templates/docs.md` and `.claude/skills/new-project/templates/dev-plan.md`, create inside `<project>`:
-1. **`docs/01-…08-…`**: documentation for humans (vision, scope, requirements, phases and timeline, approach, human/agent split, risks, decision log). Leave `docs/00-intake/` untouched and link to it.
+1. **`docs/01-…08-…`**: documentation for humans (vision, scope, requirements, phases and timeline, approach, human/agent split, risks, decision log). Leave `<intake>/` untouched and link to it.
 2. **`dev-plan/`**: step-by-step plan an agent executes (`README.md`, `PROGRESS.md`, one file per phase).
 
 Then check coherence: every requirement in `docs/` appears in some phase, and no phase contradicts a logged decision. Fix mismatches.
 
 ### 10 · Prepare the repository
-Using `.claude/skills/new-project/templates/repository.md`, create in `<project>`: `README.md`, a `.gitignore` fitting the chosen approach (always including `.env` and secrets), `.env.example` if credentials exist. **Ask** which license they want before creating one. Offer the git commands without running them unless requested.
+Using `.claude/skills/new-project/templates/repository.md`, create in `<project>`: `README.md`, a `.gitignore` fitting the chosen approach (always including `.env` and secrets), `.env.example` if credentials exist, and the agent context files `AGENTS.md` and `CLAUDE.md` so future sessions start with the project's context. **Ask** which license they want before creating one. Offer the git commands without running them unless requested.
 
-### 11 · Wrap-up
-Deliver a short report: the project folder path and its tree; key decisions in 5 lines; open assumptions and risks; and **the exact next step**: the prompt the user pastes to start phase 0 of the plan (with the real path of `<project>/dev-plan/README.md`). Mention that `<project>` can be opened as its own workspace or moved out to become its own repository.
+### 11 · Definition of done and handoff
+Follow `.claude/skills/new-project/templates/wrap-up.md`: run the final checklist and fix any failure, mark the process complete in `process/state.md`, and deliver the handoff report with the exact prompt to start phase 0. **The workflow ends here.** It does not run the plan.

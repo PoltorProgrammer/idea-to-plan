@@ -5,7 +5,7 @@ Every round follows this structure. Goal: the user decides quickly, understandin
 ## Two delivery modes
 
 1. **`ask_question` tool (preferred).** Opens a modal with clickable options and blocks until the user submits. Map the structure below like this:
-   - Each numbered question is one entry in `questions` (max 4 per call) with `question`, `options` (strings, min 2) and `is_multi_select` (default false).
+   - Each numbered question is one entry in `questions` (max 4 per call) with `question`, `options` (strings, min 2) and `is_multi_select` (default false; true only when several options can apply, e.g. which features are must-have).
    - Options are plain strings, so pros and cons go inside: `Use SQLite ✅ zero setup ⚠️ single user`. Keep each under ~140 characters.
    - The recommended option goes first and ends with `(Recommended)`. The last option is `I don't know / you decide`.
    - Do not add "write your own": the UI already has a free-text field.

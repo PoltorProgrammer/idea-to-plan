@@ -7,7 +7,7 @@ Documentation **for humans** (the user, collaborators, newcomers). Generated in 
 ```
 docs/
 ├── README.md                    index and reading guide
-├── 00-intake/                   already exists from stage 1 (original/ + formalized/); do not modify, only link to it
+├── <intake>/                    the user's raw-material folder (any name); already exists from stage 1 with original/ + formalized/; do not modify, only link to it
 ├── 01-vision-and-goals.md
 ├── 02-scope.md
 ├── 03-requirements.md

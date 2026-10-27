@@ -25,7 +25,7 @@ Applied in stage 10. Create files in the project folder `<project>` (its root, w
 Copy `.env.example` to `.env` and fill it in. **Never** commit `.env`.
 
 ## Structure
-<Short tree of the main folders: docs/ (with 00-intake/), dev-plan/, process/ and, once built, the code folders.>
+<Short tree of the main folders: docs/ (with the intake folder), dev-plan/, process/ and, once built, the code folders.>
 
 ## License
 <Chosen license or "To be defined".>
@@ -64,7 +64,7 @@ Add blocks for the approach chosen in stage 5, for example:
 - **Java/Kotlin:** `target/`, `build/`, `.gradle/`, `*.class`
 - **Go/Rust:** `bin/`, `target/` (Rust)
 - **Heavy data and models:** `data/raw/`, `*.sqlite`, `*.db` (if they should not be versioned)
-- **This process's state and sources:** `process/` is useful history; version it. **Ask** whether `docs/00-intake/original/` is versioned: it holds the user's raw files and may contain personal or sensitive data (check `formalized/index.md` for flags). If in doubt, ignore it.
+- **This process's state and sources:** `process/` is useful history; version it. **Ask** whether `<intake>/original/` is versioned: it holds the user's raw files and may contain personal or sensitive data (check `formalized/index.md` for flags). If in doubt, ignore it.
 
 Do not ignore `docs/` or `dev-plan/`.
 
@@ -77,6 +77,40 @@ Only if the project uses credentials or sensitive configuration. One variable pe
 SERVICE_API_KEY=
 ```
 
+### `AGENTS.md` and `CLAUDE.md`
+
+Persistent context so any future agent session starts knowing the project. Always create both.
+
+`AGENTS.md`:
+
+```markdown
+# <Project name>
+
+<1-2 sentence summary.>
+
+## Where things are
+- Project documentation (for humans): `docs/README.md`
+- Development plan (execute this): `dev-plan/README.md`; progress in `dev-plan/PROGRESS.md`
+- Decisions and their reasons: `docs/08-decisions.md`
+- Source material: `<intake folder>/` (never edit `original/`)
+
+## How to work on this project
+- Work one phase at a time, in order, from `dev-plan/`. Check prerequisites first, verify each step, update `PROGRESS.md`.
+- Do not reopen fixed decisions without a reason; tell the human.
+- Never ask for or store secrets in chat; they live in `.env`, ignored by git.
+- No destructive or external actions (delete, publish, spend, send) without permission.
+- If a requirement changes, update `docs/` and the decision log first, then the plan.
+
+## Current status
+See `dev-plan/PROGRESS.md`.
+```
+
+`CLAUDE.md` (Claude Code reads this file and follows the import; one line):
+
+```markdown
+@AGENTS.md
+```
+
 ### License
 
 **Ask the user** (using the round format) which license they want, explaining the differences in plain language. Usual options: MIT (very permissive), Apache-2.0 (permissive with patent grant), GPL-3.0 (copyleft), or none / "all rights reserved" if private. Create `LICENSE` only after they answer.
@@ -86,7 +120,6 @@ SERVICE_API_KEY=
 - `CONTRIBUTING.md` if there will be collaborators.
 - `.editorconfig` for consistent formatting.
 - Issue/PR templates if hosted on GitHub.
-- An `AGENTS.md` or rules file mirroring the plan's global rules, if the user works with agents in this repo.
 
 ## Commands to offer (do not run)
 

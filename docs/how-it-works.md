@@ -26,10 +26,10 @@ Three principles run through everything:
 
 Mechanics are in `intake.md`. In order:
 
-1. **Resolve the project.** If you pointed at `<X>/docs/00-intake`, the project is `<X>` and its folder name is the project name. Otherwise the agent asks for a name and location.
+1. **Resolve the project.** The folder you mention (`<intake>`) can have any name. If it sits at `<X>/docs/<name>`, the project is `<X>` and its folder name is the project name. Otherwise the agent asks for a name and location, creates the project and moves your folder to `<project>/docs/<name>/`. A single file or a description typed in chat goes into a new `<project>/docs/00-intake/`.
 2. **Inventory** every file (recursively, excluding `original/` and `formalized/`). Readable types (Markdown, text, CSV, JSON, PDF, images, and Office files when tools allow) are processed. Audio, video, archives and unreadable files are listed as **unprocessed** and the agent asks you for a transcript or summary. Nothing is skipped silently.
 3. **Sensitive content check.** API keys, passwords, financial or third-party personal data are flagged and left out of the formalized copy (`[redacted: ...]`).
-4. **Move** each file into `docs/00-intake/original/`, untouched. The previous path is logged in the index so the move can be reversed.
+4. **Move** each file into `<intake>/original/`, untouched. The previous path is logged in the index so the move can be reversed.
 5. **Formalize, losslessly.** One Markdown copy per readable source in `formalized/`. Allowed: clearer structure, typo fixes, `[unclear: ...]` marks. Not allowed: interpretation, summarizing away detail, filling gaps, translating. Every file carries a small header with its source and date.
 6. **Index.** `formalized/index.md` lists sources with 2-line factual summaries, topics, unprocessed files, sensitive-data flags, conflicts between documents and open questions.
 7. **Understanding summary.** From the index, the agent says what it understood, who is involved, what is clear, missing or contradictory, and which assumptions it is making, then asks you to confirm or correct. It proposes no solutions yet.
@@ -73,11 +73,15 @@ A coherence check follows: every requirement appears in some phase and no phase 
 
 ### 10 · Prepare the repository
 
-`README.md`, a `.gitignore` fitted to the chosen approach (always excluding `.env` and secrets), `.env.example` if credentials exist, and a license after asking you. Git commands are offered but never run unless you ask.
+`README.md`, a `.gitignore` fitted to the chosen approach (always excluding `.env` and secrets), `.env.example` if credentials exist, and a license after asking you. Also `AGENTS.md` and `CLAUDE.md` (the latter just imports the former): persistent context so any future agent session knows where the docs and plan are, the working rules and where progress is tracked. Git commands are offered but never run unless you ask.
 
-### 11 · Wrap-up
+### 11 · Definition of done and handoff
 
-A short report: the project tree, key decisions, open assumptions and risks, and the exact prompt to start phase 0.
+Mechanics are in `wrap-up.md`. The agent runs a final checklist: intake complete; closing gate approved and decisions logged; `docs/` complete with no placeholders; `dev-plan/` complete, every must-have requirement covered by a phase, phase 00 prerequisites checkable, continuation prompts chained with existing paths; repository base present; no secrets outside the originals. Failures are fixed (or put to you) before finishing. The state file is then marked **Planning complete**.
+
+The handoff report states what was done, the key decisions, what remains open, what was **deliberately not done** (no code written, nothing executed, nothing pushed), and the exact prompt to start phase 00, recommended in a new chat with the project folder as the workspace.
+
+**The workflow ends here.** Running it again on a completed project offers to revise (process new files or reopen a stage, updating the affected docs and plan) or to repeat the handoff, and warns you before touching anything that would invalidate steps already executed.
 
 ## The question rounds
 

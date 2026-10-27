@@ -2,9 +2,9 @@
 
 **An agent workflow that turns a folder of raw notes into a decided, phased project plan, through interactive decision rounds.**
 
-Works with [Antigravity](https://antigravity.google/) and [Claude Code](https://claude.com/claude-code). Plain Markdown, no dependencies, any kind of project.
+Works with [Antigravity](https://antigravity.google/product/antigravity-ide) and [Claude Code](https://claude.com/claude-code). Plain Markdown, no dependencies, any kind of project.
 
-> **Status: experimental.** Verified in Antigravity through the first stages (intake and understanding). In Claude Code the command loads; a full end-to-end run has not been verified yet. Feedback welcome.
+> **Status:** tested manually in Antigravity and Claude Code. There are no automated tests, since the workflow is instructions for a model. Feedback welcome.
 
 ## The problem
 
@@ -18,7 +18,8 @@ You drop your files in a folder and run one command. The agent:
 2. **Interviews you in rounds.** It asks 2-4 questions at a time with clickable options, each with pros, cons and a recommendation. You can always write your own answer or say "you decide".
 3. **Repeats rounds until you are satisfied.** Purpose, scope, phases, tech and tools, human/agent split, risks. Go deeper, move on or go back, as often as you want.
 4. **Asks for approval,** then generates two folders: **`docs/`** for humans (vision, scope, requirements, timeline, decisions) and **`dev-plan/`** for coding agents (step-by-step phases with verification and continuation prompts).
-5. **Prepares the repository:** README, `.gitignore`, `.env.example`, license.
+5. **Prepares the repository:** README, `.gitignore`, `.env.example`, license, and `AGENTS.md` / `CLAUDE.md` so any future agent session starts with the project's context.
+6. **Verifies it is done and hands off:** a final checklist, then the exact prompt to start phase 00.
 
 You make every decision. The agent explains, recommends and pushes back when it sees a problem; it does not flatter.
 
@@ -36,23 +37,24 @@ You make every decision. The agent explains, recommends and pushes back when it 
 cp -r idea-to-plan/both/. path/to/my-project/
 ```
 
-**2. Drop your material** in `projects/<name>/docs/00-intake/`: any mix of notes, transcripts, PDFs, images. Messy is fine.
+**2. Put your raw material in a folder:** any mix of notes, transcripts, PDFs, images; messy is fine. The folder can have **any name**. A good place is `projects/<name>/docs/<any-name>/`, for example `projects/<name>/docs/starting-notes/`.
 
-**3. Run it** in the agent chat:
+**3. Run it** in the agent chat, mentioning that folder:
 
 ```
-/new-project @projects/<name>/docs/00-intake
+/new-project @projects/<name>/docs/starting-notes
 ```
 
-Add `quick` for one round per stage. If the command does not appear, start a new Claude Code session, or check the folder name in Antigravity (see [Compatibility](#compatibility)).
+If the folder sits in `<project>/docs/`, the project is `<project>`. If it is anywhere else, the agent asks for a project name and location and moves the folder there. Add `quick` for one round per stage. If the command does not appear, start a new Claude Code session, or check the folder name in Antigravity (see [Compatibility](#compatibility)).
 
 ## What you get
 
 ```
 projects/<name>/
 ├── README.md  .gitignore  .env.example  LICENSE
+├── AGENTS.md  CLAUDE.md      context for any future agent session
 ├── docs/
-│   ├── 00-intake/
+│   ├── starting-notes/       the folder you pointed at (any name)
 │   │   ├── original/         your files, moved here untouched
 │   │   └── formalized/       one faithful Markdown copy per file + index.md
 │   └── 01-… 08-…             vision, scope, requirements, phases, approach,
@@ -66,8 +68,8 @@ The project folder is self-contained: open it as its own workspace or move it ou
 ## How a session goes
 
 ```
- Your files in projects/<name>/docs/00-intake/
-      │   /new-project @projects/<name>/docs/00-intake
+ Your raw notes and documents, in any folder
+      │   /new-project @path/to/that-folder
       ▼
  1 Intake and understanding ──► files archived, faithful copies + index,
                                  you confirm it understood you
@@ -81,9 +83,18 @@ The project folder is self-contained: open it as its own workspace or move it ou
  8 Closing gate ──► decision summary; nothing is generated without your approval
       ▼
  9 Generates docs/ and dev-plan/
-10 Prepares the repository
-11 Wrap-up + the exact prompt to start phase 0
+10 Prepares the repository (README, .gitignore, AGENTS.md, ...)
+11 Definition-of-done check + handoff: the exact prompt to start phase 0
 ```
+
+## Where it ends
+
+The workflow ends at a verified handoff: the project is documented, planned in phases and has a repository base. It then stops. **It never runs the plan or writes product code.** Execution starts with phase 00, ideally in a new chat with the project folder as the workspace, using the prompt it gives you.
+
+- A **definition-of-done checklist** is run at the end: intake complete, decisions logged, docs and plan complete, every must-have requirement covered by a phase, prompts chained correctly, no secrets or placeholders.
+- The state file is marked **"Planning complete"**.
+- Running `/new-project` again on a finished project does not redo anything: it offers to revise (new files or a reopened stage) or to repeat the handoff.
+- If a requirement changes during execution, the plan's rules say to update `docs/` and the decision log first, then the plan.
 
 ## Key features
 
@@ -112,10 +123,10 @@ Questions use `ask_question` in Antigravity and `AskUserQuestion` in Claude Code
 ```bash
 mkdir -p my-test/projects/book-tracker/docs
 cp -r idea-to-plan/both/. my-test/
-cp -r idea-to-plan/examples/book-tracker-intake my-test/projects/book-tracker/docs/00-intake
+cp -r idea-to-plan/examples/book-tracker-intake my-test/projects/book-tracker/docs/starting-notes
 ```
 
-Open `my-test/` in your agent and run `/new-project @projects/book-tracker/docs/00-intake`.
+Open `my-test/` in your agent and run `/new-project @projects/book-tracker/docs/starting-notes`.
 
 ## Learn more
 

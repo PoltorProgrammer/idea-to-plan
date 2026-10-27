@@ -6,7 +6,7 @@ Working file the agent creates inside the project folder (default `projects/<slu
 # Process state: <project name>
 
 - **Project folder:** <path, e.g. projects/book-tracker/>
-- **Intake:** docs/00-intake/ (<n> files formalized, <m> unprocessed; see formalized/index.md)
+- **Intake:** <intake folder path> (<n> files formalized, <m> unprocessed; see formalized/index.md)
 - **Created:** <date>  ·  **Last updated:** <date>
 - **Current stage:** <1-11 and name>
 - **Rounds done:** <n>

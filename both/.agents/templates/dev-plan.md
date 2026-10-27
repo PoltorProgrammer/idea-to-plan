@@ -29,6 +29,7 @@ Phases come from `docs/04-phases-and-timeline.md`. Phase 0 is usually environmen
    - Do not reopen fixed decisions without justification and notifying the human.
    - Never ask for or store secrets in chat; they live in a local `.env` ignored by git.
    - When in doubt, ask instead of assuming.
+   - If a requirement changes, update `docs/` and `docs/08-decisions.md` first, then adjust the plan and tell the human.
    - No destructive or external actions (delete, publish, spend, send) without permission.
 3. **Fixed decisions** (summary of `docs/08-decisions.md`).
 4. **Phase map:** table with phase, objective, requirements covered, human action needed?
@@ -56,7 +57,7 @@ A checklist with one `[ ]` per step of each phase, grouped by phase, plus a stat
    - What they must **not** do (paste secrets in chat, hand-edit code unnecessarily...).
    - How to confirm it was done right (e.g. a verification script).
 7. **Phase acceptance criteria:** a list that must be fully met to close the phase.
-8. **▶ Continuation prompt:** exact text the human pastes to start the next phase. It must name the phase N+1 file, order the agent to read it, check prerequisites and update `PROGRESS.md`. In the last phase, indicate project close-out.
+8. **▶ Continuation prompt:** exact text the human pastes to start the next phase. It must name the phase N+1 file, order the agent to read it, check prerequisites and update `PROGRESS.md`. In the last phase, verify the success criteria from `docs/01-vision-and-goals.md` and indicate project close-out.
 
 ## Quality criteria
 

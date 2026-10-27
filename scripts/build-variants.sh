@@ -27,7 +27,7 @@ grep -q '^## Input' "$wf" || { echo '"## Input" section not found in workflow' >
 
 input_line='The input for this run (intake folder or file, and optional flags): $ARGUMENTS'
 {
-  printf -- '---\nname: new-project\ndescription: %s\nargument-hint: @projects/<name>/docs/00-intake [quick]\ndisable-model-invocation: true\n---\n' "$desc"
+  printf -- '---\nname: new-project\ndescription: %s\nargument-hint: @path/to/folder-with-your-notes [quick]\ndisable-model-invocation: true\n---\n' "$desc"
   tr -d '\r' < "$wf" \
     | awk '/^---$/ && c<2 {c++; next} c>=2' \
     | sed 's#\.agents/templates/#.claude/skills/new-project/templates/#g' \

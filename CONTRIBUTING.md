@@ -24,7 +24,7 @@ scripts/         build-variants.sh
 
 ## Keep the workflow compact
 
-Some Antigravity customization files are reported to have a cap of about 12,000 characters, and the workflow is already around 11.4 KB. Put new detail in a template and reference it from the workflow instead of growing the workflow.
+Some Antigravity customization files are reported to have a cap of about 12,000 characters, and the workflow is already around 11.1 KB (check with `wc -c both/.agents/workflows/new-project.md`). Put new detail in a template and reference it from the workflow instead of growing the workflow.
 
 ## Testing a change
 

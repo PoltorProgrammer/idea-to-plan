@@ -1,11 +1,11 @@
 # Template: intake (stage 1 mechanics)
 
-How to turn the user's raw files into a clean, auditable base. Applies to the intake folder `<project>/docs/00-intake/` and to every re-run when new files appear.
+How to turn the user's raw files into a clean, auditable base. Applies to the intake folder `<intake>` (the folder the user pointed at, any name, normally `<project>/docs/<name>/`) and to every re-run when new files appear.
 
 ## Folder layout
 
 ```
-docs/00-intake/
+<intake>/
 ├── (new files dropped here, waiting to be processed)
 ├── original/      source files moved here untouched
 └── formalized/    one faithful Markdown copy per readable source + index.md
@@ -31,7 +31,7 @@ If a source contains API keys, passwords, tokens, financial data or personal dat
 
 ## 3. Move to `original/`
 
-**Always move** each source file into `docs/00-intake/original/`, preserving its relative subfolders (even when it came from outside the project). Rules:
+**Always move** each source file into `<intake>/original/`, preserving its relative subfolders (even when it came from outside the project). Rules:
 
 - Never edit an original, never rename it, except to resolve a name collision by adding `-2`, `-3`.
 - Record the file's **previous path** in the index so the move can be reversed.
